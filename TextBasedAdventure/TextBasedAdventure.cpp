@@ -3,9 +3,41 @@
 
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+using namespace std;
+
+int main() {
+	cout << "Welcome to the arena\n";
+	cout << "Press 1 to punch\n";
+
+	int x; //declaration
+	x = 5; //assignment
+	int y = 6.2; //the .2 gets truncated
+	int sum = x + y;
+
+	cout << x << '\n';
+	cout << y << '\n';
+	cout << sum << '\n';
+
+	double price = 10.99;
+
+	cout << "Price: " << price << '\n';
+
+	char grade = 'A'; //To store a single character, you use single quotes
+	cout << grade << '\n';
+
+	char initial = 'BC'; //The B gets removed.
+	cout << initial << '\n';
+
+	bool isReady = true;
+	cout << isReady << '\n';
+
+
+	string name = "Ravindu";
+	cout << name << '\n';
+
+
+	
+	return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
