@@ -18,7 +18,19 @@ constexpr int MapHeight = 8;
 using DungeonMap =
 array<array<Tile, MapWidth>, MapHeight>;
 
+struct Player {
+	int x;
+	int y;
+};
+
+struct GameState {
+	int treasuresCollected = 0;
+	bool isRunning = true;
+	bool hasWon = false;
+};
+
 DungeonMap CreateDungeon() {
+
 	DungeonMap map{};
 
 	//creating outer walls
@@ -57,21 +69,111 @@ char GetTileChar(Tile tile) {
 	return '?';
 }
 
-void DrawDungeon(const DungeonMap& map) {
+void DrawDungeon(const DungeonMap& map, const Player& player) {
 	for (int y = 0; y < MapHeight; ++y) {
 		for (int x = 0; x < MapWidth; ++x) {
-			cout << GetTileChar(map[y][x]);
+			if (x == player.x && y == player.y) {
+				cout << '@';
+			}
+			else {
+				cout << GetTileChar(map[y][x]);
+			}
 		}
 		cout << '\n';
 	}
 }
 
-int main() {
-	DungeonMap dungeon = CreateDungeon();
-	DrawDungeon(dungeon);
-	return 0;
+
+Player SpawnPlayer() {
+	return Player{ 2,2 };
 }
 
+bool isWalkable(const DungeonMap& map, const int& x, const int& y) {
+	//checking bounds first
+	if (x < 0 || x >= MapWidth || y < 0 || y > MapHeight) {
+		return false;
+	}
+	else {
+		return map[y][x] != Tile::Wall;
+	}
+}
+
+void ProcessCurrentTile(DungeonMap& map, const Player& player, GameState& gamestate) {
+	Tile& tile = map[player.y][player.x];
+	if (tile == Tile::Treasure) {
+		cout << "Collected Treasure! \n";
+		++gamestate.treasuresCollected;
+		tile = Tile::Floor;
+	}
+	if (tile == Tile::Exit) {
+		cout << "You found the exit, You win! \n";
+		gamestate.hasWon = true;
+		gamestate.isRunning = false;
+	}
+}
+
+bool MovePlayer(Player& player, const DungeonMap& map, char command) {
+	int newX = player.x;
+	int newY = player.y;
+
+	switch (command) {
+	case 'w':
+	case 'W':
+		--newY;
+		break;
+	case 's':
+	case 'S':
+		++newY;
+		break;
+	case 'd':
+	case 'D':
+		++newX;
+		break;
+	case 'a':
+	case 'A':
+		--newX;
+		break;
+	default:
+		return false;
+	}
+
+	if (!isWalkable(map, newX, newY)) {
+		cout << "You cannot move there! \n";
+		return false;
+	}
+
+	player.x = newX;
+	player.y = newY;
+
+	return true;
+}
+
+int main() {
+	GameState gamestate;
+	DungeonMap dungeon = CreateDungeon();
+	Player player = SpawnPlayer();
+	char command;
+
+	while (gamestate.isRunning) {
+		DrawDungeon(dungeon, player);
+		std::cout << "\nMove with W/A/S/D, or Q to quit: ";
+
+		if (!(std::cin >> command)) {
+			break;
+		}
+		if (command == 'q' || command == 'Q') {
+			break;
+		}
+
+		const bool moved = MovePlayer(player, dungeon, command);
+		if(moved)ProcessCurrentTile(dungeon, player, gamestate);
+		std::cout << "\n\n";
+	}
+	std::cout << "Final treasure count: " << gamestate.treasuresCollected << '\n';
+	std::cout << "Thanks for playing! \n";
+	return 0;
+}
+/*
 int Notes() {
 	cout << "Welcome to the arena\n";
 	cout << "Press 1 to punch\n";
@@ -106,7 +208,7 @@ int Notes() {
 
 	return 0;
 }
-
+*/
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
