@@ -1,11 +1,78 @@
 // TextBasedAdventure.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
+#include <array>
 #include <iostream>
 
 using namespace std;
 
+enum class Tile {
+	Floor,
+	Wall,
+	Treasure,
+	Exit
+};
+
+constexpr int MapWidth = 12;
+constexpr int MapHeight = 8;
+
+using DungeonMap =
+array<array<Tile, MapWidth>, MapHeight>;
+
+DungeonMap CreateDungeon() {
+	DungeonMap map{};
+
+	//creating outer walls
+	for (int y = 0; y < MapHeight; ++y) {
+		for (int x = 0; x < MapWidth; ++x) {
+			if (x == 0 || y == 0 || x == MapWidth - 1 || y == MapHeight - 1) {
+				map[y][x] = Tile::Wall;
+			}
+		}
+	}
+
+	//adding a few interior walls
+	map[2][3] = Tile::Wall;
+	map[4][2] = Tile::Wall;
+	map[3][5] = Tile::Wall;
+	map[2][10] = Tile::Wall;
+	map[7][3] = Tile::Wall;
+	map[6][6] = Tile::Wall;
+	map[5][6] = Tile::Wall;
+
+	//placing treasure and exit
+	map[5][4] = Tile::Treasure;
+	map[6][3] = Tile::Exit;
+
+	return map;
+}
+
+char GetTileChar(Tile tile) {
+
+	switch (tile) {
+	case Tile::Treasure: return 'T';
+	case Tile::Wall: return '#';
+	case Tile::Exit: return 'E';
+	case Tile::Floor: return '.';
+	}
+	return '?';
+}
+
+void DrawDungeon(const DungeonMap& map) {
+	for (int y = 0; y < MapHeight; ++y) {
+		for (int x = 0; x < MapWidth; ++x) {
+			cout << GetTileChar(map[y][x]);
+		}
+		cout << '\n';
+	}
+}
+
 int main() {
+	DungeonMap dungeon = CreateDungeon();
+	DrawDungeon(dungeon);
+	return 0;
+}
+
+int Notes() {
 	cout << "Welcome to the arena\n";
 	cout << "Press 1 to punch\n";
 
@@ -36,7 +103,7 @@ int main() {
 	cout << name << '\n';
 
 
-	
+
 	return 0;
 }
 
